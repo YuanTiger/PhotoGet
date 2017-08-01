@@ -246,7 +246,7 @@ intent.putExtra("output", cropBean.saveUri);
 //跳转
 activity.startActivityForResult(intent, requestCode);
 ```
-裁剪参数的含义可以参考[这篇文章](https://github.com/showdy/Android_Note/blob/master/showdy_note/android/strategy/%E4%BD%BF%E7%94%A8%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%86%8C%E5%9B%BE%E7%89%87%E6%88%96%E6%8B%8D%E7%85%A7%E5%B9%B6%E8%A3%81%E5%89%AA%E4%B9%8BAndroid_N%E9%80%82%E9%85%8D.md)：
+[裁剪参数的含义可以参考这篇文章](https://github.com/showdy/Android_Note/blob/master/showdy_note/android/strategy/%E4%BD%BF%E7%94%A8%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%86%8C%E5%9B%BE%E7%89%87%E6%88%96%E6%8B%8D%E7%85%A7%E5%B9%B6%E8%A3%81%E5%89%AA%E4%B9%8BAndroid_N%E9%80%82%E9%85%8D.md)：
 
 | 附加选项  | 数据类型 | 描述 |
 | :------------ |:---------------:| -----:|
@@ -337,5 +337,7 @@ public class CropBean {
 
 ## 感谢 ##
 [使用系统裁剪](https://github.com/showdy/Android_Note/blob/master/showdy_note/android/strategy/%E4%BD%BF%E7%94%A8%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%86%8C%E5%9B%BE%E7%89%87%E6%88%96%E6%8B%8D%E7%85%A7%E5%B9%B6%E8%A3%81%E5%89%AA%E4%B9%8BAndroid_N%E9%80%82%E9%85%8D.md)
+
 [Intent传输大小实战](http://blog.csdn.net/wingichoy/article/details/50679322)
+
 [相机7.0图片选择适配](http://www.jianshu.com/p/3f9e3fc38eae)
