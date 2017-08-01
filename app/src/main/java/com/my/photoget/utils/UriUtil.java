@@ -10,6 +10,8 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.my.photoget.activity.App;
+
 /**
  * Author：mengyuan
  * Date  : 2017/7/27下午6:12
@@ -22,10 +24,9 @@ public class UriUtil {
     /**
      * Get a file path from a Uri. This will get the the path for Storage Access
      */
-    public static String getPath(final Context context, final Uri uri) {
-
+    public static String getPath( final Uri uri) {
         // DocumentProvider
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, uri)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(App.context, uri)) {
             // ExternalStorageProvider
             if (isExternalStorageDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
@@ -44,7 +45,7 @@ public class UriUtil {
                 final Uri contentUri = ContentUris.withAppendedId(
                         Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
 
-                return getDataColumn(context, contentUri, null, null);
+                return getDataColumn(App.context, contentUri, null, null);
             }
             // MediaProvider
             else if (isMediaDocument(uri)) {
@@ -66,12 +67,12 @@ public class UriUtil {
                         split[1]
                 };
 
-                return getDataColumn(context, contentUri, selection, selectionArgs);
+                return getDataColumn(App.context, contentUri, selection, selectionArgs);
             }
         }
         // MediaStore (and general)
         else if ("content".equalsIgnoreCase(uri.getScheme())) {
-            return getDataColumn(context, uri, null, null);
+            return getDataColumn(App.context, uri, null, null);
         }
         // File
         else if ("file".equalsIgnoreCase(uri.getScheme())) {
@@ -82,7 +83,7 @@ public class UriUtil {
     }
 
     /**
-     * Get the value of the data column for this Uri. This is useful for MediaStore Uris, and other file-based ContentProviders.
+     * Get the value of the returnData column for this Uri. This is useful for MediaStore Uris, and other file-based ContentProviders.
      */
     public static String getDataColumn(Context context, Uri uri, String selection,
                                        String[] selectionArgs) {

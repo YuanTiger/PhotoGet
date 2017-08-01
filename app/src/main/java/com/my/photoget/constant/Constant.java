@@ -6,7 +6,7 @@ import java.io.File;
 
 /**
  * Author：mengyuan
- * Date  : 2017/7/27下午2:52
+ * Date  : 2017/7/27下午2:522
  * E-Mail:mengyuanzz@126.com
  * Desc  :
  */
@@ -23,7 +23,9 @@ public class Constant {
     public static final int PREMISSION_WRITE_EXTERNAL_STORAGE = 34316;
 
 
-
-    public static File bgPath = new File(Environment.getExternalStorageDirectory(), "photo_bg.jpg");
+    //存放背景的File路径
+    public static File bgFile = new File(Environment.getExternalStorageDirectory(), "photo_bg.jpg");
+    //存放头像的File路径
+    public static File headPortraitFile = new File(Environment.getExternalStorageDirectory(), "head_portrait.jpg");
 
 }

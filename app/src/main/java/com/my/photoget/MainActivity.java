@@ -6,11 +6,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.my.photoget.activity.App;
 import com.my.photoget.activity.BaseActivity;
 import com.my.photoget.activity.BgSelectActivity;
+import com.my.photoget.activity.HeadPortraitActivity;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
-
 
 
     @Override
@@ -23,6 +24,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         findViewById(R.id.bt_head_portrait).setOnClickListener(this);
     }
 
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -30,6 +32,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 startActivity(new Intent(MainActivity.this, BgSelectActivity.class));
                 break;
             case R.id.bt_head_portrait://选择头像
+                startActivity(new Intent(MainActivity.this, HeadPortraitActivity.class));
                 break;
         }
     }

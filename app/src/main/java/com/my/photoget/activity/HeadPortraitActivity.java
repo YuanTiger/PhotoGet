@@ -1,7 +1,6 @@
 package com.my.photoget.activity;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,13 +8,16 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.my.photoget.R;
+import com.my.photoget.bean.CropBean;
 import com.my.photoget.constant.Constant;
 import com.my.photoget.utils.AppUtils;
+import com.my.photoget.utils.ScreenUtils;
 import com.my.photoget.utils.UriUtil;
 
 import java.io.File;
@@ -25,27 +27,28 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * Author：mengyuan
- * Date  : 2017/7/27下午1:46
+ * Date  : 2017/8/1上午9:59
  * E-Mail:mengyuanzz@126.com
  * Desc  :
  */
 
-public class BgSelectActivity extends BaseActivity implements View.OnClickListener {
+public class HeadPortraitActivity extends BaseActivity implements View.OnClickListener {
 
 
     private final int REQUEST_CODE_ALBUM = 101;//相册回调
     private final int REQUEST_CODE_CAMER = 102;//相机回调
+    private final int REQUEST_CODE_CROP = 103;//裁剪回调
 
 
-    private ImageView iv_bg;
+    private ImageView iv_head_portrait;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bg);
+        setContentView(R.layout.activity_head_portrait);
 
-        iv_bg = (ImageView) findViewById(R.id.iv_bg);
+        iv_head_portrait = (ImageView) findViewById(R.id.iv_head_portrait);
 
         findViewById(R.id.bt_change_bg).setOnClickListener(this);
     }
@@ -79,18 +82,18 @@ public class BgSelectActivity extends BaseActivity implements View.OnClickListen
     @AfterPermissionGranted(Constant.PREMISSION_CAMERA)
     public void openPremissionCamera() {
         if (AppUtils.isOpenPremission(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            AppUtils.startCamer(BgSelectActivity.this, Constant.bgFile, REQUEST_CODE_CAMER);
+            AppUtils.startCamer(HeadPortraitActivity.this, Constant.headPortraitFile, REQUEST_CODE_CAMER);
         } else {
-            EasyPermissions.requestPermissions(BgSelectActivity.this, "您需要打开拍照权限以及读取相册权限", Constant.PREMISSION_CAMERA, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            EasyPermissions.requestPermissions(HeadPortraitActivity.this, "您需要打开拍照权限以及读取相册权限", Constant.PREMISSION_CAMERA, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
     }
 
     @AfterPermissionGranted(Constant.PREMISSION_WRITE_EXTERNAL_STORAGE)
     public void openPremissionAblum() {
         if (AppUtils.isOpenPremission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            AppUtils.startAlbum(BgSelectActivity.this, REQUEST_CODE_ALBUM);
+            AppUtils.startAlbum(HeadPortraitActivity.this, REQUEST_CODE_ALBUM);
         } else {
-            EasyPermissions.requestPermissions(BgSelectActivity.this, "您需要打开读取相册权限", Constant.PREMISSION_WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            EasyPermissions.requestPermissions(HeadPortraitActivity.this, "您需要打开读取相册权限", Constant.PREMISSION_WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         }
     }
@@ -104,17 +107,32 @@ public class BgSelectActivity extends BaseActivity implements View.OnClickListen
         }
         switch (requestCode) {
             case REQUEST_CODE_ALBUM://相册
-                Uri dataUri = data.getData();
-                Log.i("mengyuanuri", "相册uri:" + dataUri.getScheme() + ":" + dataUri.getSchemeSpecificPart());
-                Bitmap bitmapAlbum = BitmapFactory.decodeFile(UriUtil.getPath(dataUri));
-                iv_bg.setImageBitmap(bitmapAlbum);
+                startCrop(data.getData());
                 break;
             case REQUEST_CODE_CAMER://相机
-                File bgPath = Constant.bgFile;
-                Log.i("mengyuanuri", "回调的Path:" + bgPath.getPath());
-                Bitmap bitmapCamer = BitmapFactory.decodeFile(bgPath.getPath());
-                iv_bg.setImageBitmap(bitmapCamer);
+                startCrop(Uri.fromFile(Constant.headPortraitFile));
+                break;
+            case REQUEST_CODE_CROP://裁剪完成
+                Bitmap cropBitmap = BitmapFactory.decodeFile(Constant.headPortraitFile.getPath());
+                iv_head_portrait.setImageBitmap(cropBitmap);
                 break;
         }
+    }
+
+    /**
+     * 跳转裁剪
+     *
+     * @param data
+     */
+    private void startCrop(Uri data) {
+        CropBean albumCropBean = new CropBean();
+        albumCropBean.dataUri = data;
+        albumCropBean.outputX = ScreenUtils.dp2Px(55);
+        albumCropBean.outputY = ScreenUtils.dp2Px(55);
+        albumCropBean.caculateAspect();
+        albumCropBean.isReturnData = false;
+        albumCropBean.saveUri = Uri.fromFile(Constant.headPortraitFile);
+        //跳转裁剪
+        AppUtils.startCrop(this, albumCropBean, REQUEST_CODE_CROP);
     }
 }
