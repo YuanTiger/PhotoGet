@@ -1,8 +1,12 @@
 ## 前言 ##
 很多项目中都会有用户修改头像或者类似的功能。
+
 该功能会访问用户的相册、相机来获取图片，然后显示到页面上。
+
 实现该功能还是比较简单的，网上的资料也非常多，简单查阅之后复制粘贴便能实现，但是很多细节其实并不理解。
+
 并且由于Android安全性的提升，包括Android6.0（API 23）的权限系统升级、Android7.0（API 24）的私有文件访问限制，很多地方稍不注意就会发生崩溃。
+
 最近再次用到了这个功能，这次打算用一篇文章来详细记录这个功能点所对应的知识点，并解决掉之前的很多疑问。
 
 ## 打开相册 ##
@@ -32,6 +36,7 @@ intent.setType("image/*");
 activity.startActivityForResult(intent, requestCode);
 ```
 这几种方式都可以在获取到读取文件权限的前提下，完美实现图片选择。
+
 第三种[ACTION_OPEN_DOCUMENT](https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_OPEN_DOCUMENT)是在Android5.0(API 19)之后新添加的意图，如果使用的话需要进行
 ```
 if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT){
@@ -39,25 +44,39 @@ if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT){
 }
 ```
 我们这里先不介绍[ACTION_OPEN_DOCUMENT](https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_OPEN_DOCUMENT)。
+
 第二种[ACTION_GET_CONTENT](https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_GET_CONTENT)与第一种[ACTION_PICK](https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_PICK)这两个意图类型的作用也非常类似，都是用来获取手机内容，包括联系人、相册等。
+
 通过`intent.setType("image/*")`来指定**MIME Type**，让系统知道要打开的应用。
+
 这里需要注意，必须指定**MIME Type**，否则项目会崩溃：
 ```
 android.content.ActivityNotFoundException: No Activity found to handle Intent { act=android.intent.action.GET_CONTENT }
 android.content.ActivityNotFoundException: No Activity found to handle Intent { act=android.intent.action.ACTION_PICK }
 ```
 根据不同的**MIME Type**，可以跳转到不同的应用。
+
 那么这两者有什么区别呢？
+
 [ACTION_GET_CONTENT](https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_GET_CONTENT)与[ACTION_PICK](https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_PICK)的官方解释在这里。
+
 英语比较差，跟着百度翻译看了半天还是不懂。
+
 ![](http://7xvzby.com1.z0.glb.clouddn.com/gaoxiao/%E6%83%A8%E4%B8%8D%E5%BF%8D%E7%9D%B9.png)
+
 英语好的同学可自行食用上面的链接，应该不需要翻墙。
+
 两者的区别介绍都写在了[ACTION_GET_CONTENT](https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_GET_CONTENT)，大概是在说：
+
 如果你有一些特定的集合（由URI标识）想让用户选择，使用[ACTION_PICK](https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_PICK)。
+
 如果让用户基于**MIME Type**选择数据，使用[ACTION_GET_CONTENT](https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_GET_CONTENT)。
 在平局的情况下，建议使用[ACTION_GET_CONTENT](https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_GET_CONTENT)。
+
 这个还是需要各位看官自己好好理解，我也没能完全了解两者的使用区别。
+
 并且我发现两者返回的Uri格式是不同的：
+
 [关于Android中Uri的介绍，可以参考这篇文章](http://www.jianshu.com/p/5572b42fc63f)。
 
 两种意图分别唤起相册后，选择同一张图片的回调，也就是在onActivityResult中接收：
@@ -78,6 +97,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 ```
 
 接下来我们来看看两个意图类型下选择同一张照片返回的数据：
+
 [ACTION_GET_CONTENT](https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_GET_CONTENT)：
 ```
 content://com.android.providers.media.documents/document/image:2116
@@ -87,11 +107,16 @@ content://com.android.providers.media.documents/document/image:2116
 content://media/external/images/media/2116
 ```
 没有其他的东西，两者都是返回一个Uri。
+
 为什么不直接返回给我们图片，而是一个Uri呢？
+
 [因为Intent传输有大小的限制。](http://blog.csdn.net/wingichoy/article/details/50679322)
 所以我们需要根据Uri来获取到文件的具体路径。
+
 但是我们发现，就算是同一张照片，两种意图下，返回的Uri也是不一致的。
+
 这主要是因为Uri在Android中的类型也分为很多种，比如这两个意图的Uri种类就不一致。
+
 这里就不做赘述了，我们可以通过网上大神封装的解析Uri的方法将它们统一转化成File路径：
 ```
 public static String getPath( final Uri uri) {
@@ -160,6 +185,7 @@ public static String getPath( final Uri uri) {
 
 
 简单来说，三种方法都可以使用，并且三种方法都是在onActivityResult中返回Uri，而不是图片。
+
 一般情况使用[ACTION_GET_CONTENT](https://developer.android.google.cn/reference/android/content/Intent.html#ACTION_GET_CONTENT)的会多一些。
 
 ## 相机 ##
@@ -188,10 +214,15 @@ switch (requestCode) {
 }
 ```
 非常简单，在相机回调中去指定路径中读取图片并显示。
+
 但是我们应该可以想到，**有些手机没有相机**，也就是没有[MediaStore.ACTION_IMAGE_CAPTURE](https://developer.android.google.cn/reference/android/provider/MediaStore.html#ACTION_IMAGE_CAPTURE)意图对应的应用。
+
 如果没有对其进行判断就会抛出[ActivityNotFound](https://developer.android.google.cn/reference/android/content/ActivityNotFoundException.html)的异常。
+
 如何解决这个问题：
+
 1. try-catch，简单粗暴；
+
 2. 通过PackageManager去查询[MediaStore.ACTION_IMAGE_CAPTURE](https://developer.android.google.cn/reference/android/provider/MediaStore.html#ACTION_IMAGE_CAPTURE)意图是否存在。
 
 两种做法都很简单，这里展示如何用PackageManager：
@@ -207,6 +238,7 @@ public static boolean isHaveCame(String intentName) {
 }
 ```
 接着我们运行，十分成功。
+
 但是在7.1的虚拟机中，打开相机崩溃了：
 ```
 android.os.FileUriExposedException: file:///storage/emulated/0/photo_bg.jpg exposed beyond app through ClipData.Item.getUri(
@@ -224,8 +256,11 @@ android.os.FileUriExposedException: file:///storage/emulated/0/photo_bg.jpg expo
     at com.my.photoget.utils.AppUtils.startCamer(AppUtils.java:37)
 ```
 崩溃的主要原因是因为在7.0(API 24)中对文件读取进行了安全性的提升，[这篇文章详细介绍了解决方案](http://www.jianshu.com/p/3f9e3fc38eae)。
+
 这里提一下，这和当初Android6.0(API 23)权限管理改版一致，如果**build.gradle**中的`targetSdkVersion`<23，则会沿用以前的权限管理机制，无需进行权限管理改版，[权限管理详见这篇小文](http://www.jianshu.com/p/9271efd71450)。
+
 同理，这里如果你的`targetSdkVersion`<24的话，则无需进行上述崩溃的适配。
+
 但是更新一定是往更好的方向去的，还是建议各位看官及时更新，及时适配，保证`targetSdkVersion`为最新SDK。
 
 ## 裁剪 ##
@@ -320,17 +355,26 @@ public class CropBean {
 }
 ```
 关于封装对象中`caculateAspect()`方法，因为**aspectX**与**aspectY**是用来设定裁剪框宽高比例的，所以我选择在指定完**outputX**与**outputY**（也就是裁剪图片的宽度和高度）之后，直接根据宽高来计算裁剪框的大小。
+
 `caculateAspect()`中就是具体的计算过程。
+
 还有几个比较重要的参数需要提一下：
-- **intent.setData(Uri uri)**是必须指定的，它代表着要裁剪的图片的Uri。
+
+- intent.setData(Uri uri)是必须指定的，它代表着要裁剪的图片的Uri。
+
 - **return-data**参数代表是否要返回数据，如果为true，则返回Bitmap对象，如果为false，则会将图片直接保存到另一个参数**output**中。也就是说，当**return-data**为true时，**output**是没有用的，直接在**onActivityResult**中取data当中的Bitmap即可。如果为false，则直接在onActivityResult中去之前指定到**output**中的地址取出图片即可。
+
 - 综上一点，强烈建议设置**return-data**为false并且设置**output**，[因为Intent传输是有大小限制的](http://blog.csdn.net/wingichoy/article/details/50679322)。为防止超出大小的现象发生，通过Uri传输最为安全。
 
 ## 总结 ##
 到此为止，获取图片显示的功能已经完成了。
+
 [整个项目已经上传至GitHub](https://github.com/z593492734/PhotoGet)，简单总结一下：
+
 1. 通过相册获取图片的方式有很多，但是在onActivityResult中都是以Uri的方式传递的。
+
 2. 裁剪功能不是必要的，如果没有裁剪需求可忽略。强烈建议不要将**return-data**设置为true，可能会超出Intent传输大小限制。
+
 3. 当你的targetSdkVersion>=23时，需要进行[权限管理的升级](http://www.jianshu.com/p/9271efd71450)，当你的targetSdkVersion>=24时，需要进行[FileProvider的适配](http://www.jianshu.com/p/3f9e3fc38eae)。强烈建议进行适配，提升应用的安全性。
 
 
