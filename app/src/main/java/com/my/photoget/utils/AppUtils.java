@@ -4,15 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -42,8 +38,8 @@ public class AppUtils {
      * @param file
      * @param requestCode
      */
-    public static void startCamer(Activity activity, File file, int requestCode) {
-        if (!isHaveCame(MediaStore.ACTION_IMAGE_CAPTURE)) {
+    public static void startCamera(Activity activity, File file, int requestCode) {
+        if (!isHaveIntent(MediaStore.ACTION_IMAGE_CAPTURE)) {
             Toast.makeText(activity, "该手机没有安装相机", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -54,7 +50,7 @@ public class AppUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             //getUriForFile(Context context, String authority, File file)
             //authority需要和AndroidManifest中的authorities属性保持一致
-            Uri photoUri = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".fileprovider", file);
+            Uri photoUri = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".fileProvider", file);
 
             Log.i("mengyuanuri", "SDK>=24相机拍摄存储的uri:" + photoUri.getScheme() + ":" + photoUri.getSchemeSpecificPart());
             //申请权限
@@ -135,7 +131,7 @@ public class AppUtils {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             //将数据Uri转化成FileProvider的Uri
             File dataFile = new File(UriUtil.getPath(cropBean.dataUri));
-            cropBean.dataUri = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".fileprovider", dataFile);
+            cropBean.dataUri = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".fileProvider", dataFile);
 
             Log.i("mengyuanuri", "SDK>=24裁剪的Uri:" + cropBean.dataUri.getScheme() + ":" + cropBean.dataUri.getSchemeSpecificPart());
             Log.i("mengyuanuri", "SDK>=24裁剪保存的Uri:" + cropBean.saveUri.getScheme() + ":" + cropBean.saveUri.getSchemeSpecificPart());
@@ -183,7 +179,7 @@ public class AppUtils {
     /**
      * 判断某个意图是否存在
      */
-    public static boolean isHaveCame(String intentName) {
+    public static boolean isHaveIntent(String intentName) {
         PackageManager packageManager = App.context.getPackageManager();
         Intent intent = new Intent(intentName);
         List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);

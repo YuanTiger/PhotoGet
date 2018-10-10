@@ -79,7 +79,7 @@ public class BgSelectActivity extends BaseActivity implements View.OnClickListen
     @AfterPermissionGranted(Constant.PREMISSION_CAMERA)
     public void openPremissionCamera() {
         if (AppUtils.isOpenPremission(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            AppUtils.startCamer(BgSelectActivity.this, Constant.bgFile, REQUEST_CODE_CAMER);
+            AppUtils.startCamera(BgSelectActivity.this, Constant.bgFile, REQUEST_CODE_CAMER);
         } else {
             EasyPermissions.requestPermissions(BgSelectActivity.this, "您需要打开拍照权限以及读取相册权限", Constant.PREMISSION_CAMERA, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }

@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -18,9 +17,6 @@ import com.my.photoget.bean.CropBean;
 import com.my.photoget.constant.Constant;
 import com.my.photoget.utils.AppUtils;
 import com.my.photoget.utils.ScreenUtils;
-import com.my.photoget.utils.UriUtil;
-
-import java.io.File;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -82,7 +78,7 @@ public class HeadPortraitActivity extends BaseActivity implements View.OnClickLi
     @AfterPermissionGranted(Constant.PREMISSION_CAMERA)
     public void openPremissionCamera() {
         if (AppUtils.isOpenPremission(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            AppUtils.startCamer(HeadPortraitActivity.this, Constant.headPortraitFile, REQUEST_CODE_CAMER);
+            AppUtils.startCamera(HeadPortraitActivity.this, Constant.headPortraitFile, REQUEST_CODE_CAMER);
         } else {
             EasyPermissions.requestPermissions(HeadPortraitActivity.this, "您需要打开拍照权限以及读取相册权限", Constant.PREMISSION_CAMERA, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
@@ -127,8 +123,8 @@ public class HeadPortraitActivity extends BaseActivity implements View.OnClickLi
     private void startCrop(Uri data) {
         CropBean albumCropBean = new CropBean();
         albumCropBean.dataUri = data;
-        albumCropBean.outputX = ScreenUtils.dp2Px(55);
-        albumCropBean.outputY = ScreenUtils.dp2Px(55);
+        albumCropBean.outputX = ScreenUtils.dp2Px(100);
+        albumCropBean.outputY = ScreenUtils.dp2Px(100);
         albumCropBean.caculateAspect();
         albumCropBean.isReturnData = false;
         albumCropBean.saveUri = Uri.fromFile(Constant.headPortraitFile);
